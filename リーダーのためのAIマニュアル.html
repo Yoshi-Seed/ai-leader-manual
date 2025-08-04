@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成AI活用推進インフォグラフィック | リーダー向けガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #665191, #d45087, #ffa600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .kpi-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #665191;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .gemini-result {
+            background-color: #f8f9fa;
+            border-left: 4px solid #665191;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.25rem;
+            text-align: left;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm mx-auto">
+            <h3 class="text-xl font-bold text-red-600 mb-4">エラー</h3>
+            <p id="error-message" class="text-slate-700 mb-6"></p>
+            <button onclick="document.getElementById('error-modal').classList.add('hidden')" class="bg-slate-500 text-white px-4 py-2 rounded-lg hover:bg-slate-600 transition-colors">閉じる</button>
+        </div>
+    </div>
+    
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12 md:mb-16">
+            <h1 class="text-4xl md:text-6xl font-bold gradient-text mb-4">生成AI活用の新時代</h1>
+            <p class="text-lg md:text-xl text-slate-600">リーダーが導く、リスク管理と活用推進のガイド</p>
+        </header>
+
+        <section id="role" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#003f5c]">リーダーの二つの役割</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-[#ff7c43]">
+                    <h3 class="text-2xl font-bold mb-4 text-[#003f5c]">守り：リスク管理の徹底</h3>
+                    <p class="text-slate-600">チームが安全にAI技術の恩恵を受けられるよう、明確なルールとガイドラインで保護します。情報セキュリティ、ツール利用、成果物の品質におけるリスクを未然に防ぐことが最優先です。</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-[#665191]">
+                    <h3 class="text-2xl font-bold mb-4 text-[#003f5c]">攻め：活用推進による成長</h3>
+                    <p class="text-slate-600">AIを単なる効率化ツールに留めず、チームの創造性や生産性を飛躍させる原動力とします。「まずやってみる」文化を醸成し、成功事例を共有することで組織全体の力を高めます。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="rules" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-12 text-[#003f5c]">守りの徹底：リーダーが徹底すべき３つの最重要ルール</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <div class="kpi-card">
+                    <h3 class="text-2xl font-bold mb-4 text-[#d45087]">ルール① 情報セキュリティ</h3>
+                    <p class="text-slate-600 mb-6">AIへの入力情報は、企業の信頼そのものです。特に機密性の高い情報は、絶対にAIに入力してはいけません。</p>
+                    <div class="space-y-4 text-left p-4 flex-grow flex flex-col justify-center">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-[#d45087] text-white font-bold text-lg mr-4">1</div>
+                            <div class="flex-grow pt-1">
+                                <h4 class="font-bold text-slate-700">個人情報</h4>
+                                <p class="text-sm text-slate-500">氏名、連絡先など個人を特定できる情報</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-[#f95d6a] text-white font-bold text-lg mr-4">2</div>
+                            <div class="flex-grow pt-1">
+                                <h4 class="font-bold text-slate-700">クライアントの機密情報</h4>
+                                <p class="text-sm text-slate-500">NDA対象の情報や社外秘データ</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-[#ff7c43] text-white font-bold text-lg mr-4">3</div>
+                            <div class="flex-grow pt-1">
+                                <h4 class="font-bold text-slate-700">その他未公開情報</h4>
+                                <p class="text-sm text-slate-500">会社の業績や戦略に関する内部情報</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-500 mt-4">リーダーは部下が情報の取り扱いに迷った際の、最初の相談相手です。</p>
+                </div>
+
+                <div class="kpi-card">
+                    <h3 class="text-2xl font-bold mb-4 text-[#665191]">ルール② 利用ツールの管理</h3>
+                    <p class="text-slate-600 mb-6">セキュリティが担保されたツールのみが、私たちの業務を守ります。「野良AI」の利用は厳禁です。</p>
+                    <div class="space-y-4">
+                        <div class="bg-green-100 p-3 rounded-lg">
+                            <h4 class="font-bold text-green-800">申請不要ツール</h4>
+                            <p class="text-green-700">Microsoft Copilot, Google Gemini</p>
+                        </div>
+                        <div class="bg-amber-100 p-3 rounded-lg">
+                            <h4 class="font-bold text-amber-800">要申請ツール</h4>
+                            <p class="text-amber-700">ChatGPT有料版, その他AIツール</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-left">
+                        <h4 class="font-bold text-center mb-2 text-[#003f5c]">承認プロセス</h4>
+                        <div class="flex items-center justify-center space-x-2 text-sm">
+                            <div class="bg-slate-200 p-2 rounded-md">部下が利用希望</div>
+                            <div class="text-slate-400 font-bold">&rarr;</div>
+                            <div class="bg-slate-200 p-2 rounded-md">楽楽精算で申請</div>
+                            <div class="text-slate-400 font-bold">&rarr;</div>
+                            <div class="bg-slate-200 p-2 rounded-md">承認後、利用開始</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <h3 class="text-2xl font-bold mb-4 text-[#2f4b7c]">ルール③ 成果物の品質担保</h3>
+                    <p class="text-slate-600 mb-6">AIの出力はあくまで「たたき台」。最終的な品質は、人の目で保証します。</p>
+                    <div class="text-8xl font-bold text-[#ff7c43]">100%</div>
+                    <p class="text-xl font-bold mb-6 text-slate-700">レビュー必須</p>
+                    <div class="mt-6 text-left">
+                        <h4 class="font-bold text-center mb-2 text-[#003f5c]">品質保証フロー</h4>
+                        <div class="flex items-center justify-center space-x-2 text-sm">
+                            <div class="bg-slate-200 p-2 rounded-md">AIが出力</div>
+                            <div class="text-slate-400 font-bold">&rarr;</div>
+                            <div class="bg-slate-200 p-2 rounded-md font-semibold border-2 border-[#d45087]">人間がレビュー</div>
+                            <div class="text-slate-400 font-bold">&rarr;</div>
+                            <div class="bg-slate-200 p-2 rounded-md">最終成果物</div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2 text-center">コピー＆ペーストでの納品は厳禁です。</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="client-work" class="mb-16 bg-white p-8 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#003f5c]">クライアントワークの鉄則：透明性と信頼</h2>
+            <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">AIの利用は「こっそり」ではなく、「オープンに」が基本です。クライアントとの信頼関係を最優先し、許諾取得の判断はリーダーが責任を持って行います。</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div class="w-full max-w-4xl mx-auto">
+                    <h4 class="text-xl font-bold text-center mb-4 text-[#003f5c]">許諾取得の判断フロー</h4>
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-full p-4">
+                            <div class="font-bold text-lg p-4 bg-[#665191] text-white rounded-t-lg">AI利用を検討</div>
+                            <div class="p-4 border-x-2 border-b-2 border-slate-300 rounded-b-lg h-full flex items-center justify-center">
+                                <div class="text-2xl text-slate-400">&darr;</div>
+                            </div>
+                        </div>
+                        <div class="w-full h-5 border-l-2 border-r-2 border-slate-300"></div>
+                        <div class="w-full h-5 border-b-2 border-slate-300 relative"><div class="absolute w-full h-5 -top-5 border-l-2 border-r-2 border-slate-300"></div></div>
+                        <div class="flex flex-row w-full">
+                            <div class="flex-1 p-4">
+                                <div class="font-bold text-lg p-4 bg-[#a05195] text-white rounded-t-lg h-24 flex items-center justify-center">軽微な利用か？<br>(アイデア出し等)</div>
+                                <div class="p-4 border-x-2 border-b-2 border-slate-300 rounded-b-lg">
+                                    <p class="font-bold text-[#a05195]">YES &rarr;</p>
+                                    <p class="mt-2 text-slate-600">メール等で同意取得</p>
+                                </div>
+                            </div>
+                            <div class="flex-1 p-4">
+                                <div class="font-bold text-lg p-4 bg-[#d45087] text-white rounded-t-lg h-24 flex items-center justify-center">本格的な利用か？<br>(報告書作成等)</div>
+                                <div class="p-4 border-x-2 border-b-2 border-slate-300 rounded-b-lg">
+                                    <p class="font-bold text-[#d45087]">YES &rarr;</p>
+                                    <p class="mt-2 text-slate-600">提案書・契約書に明記し、正式同意</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-card mt-10 md:mt-0 flex-grow">
+                    <h3 class="text-2xl font-bold mb-4 text-[#003f5c]">✨ クライアントへの説明文ドラフト作成</h3>
+                    <p class="text-slate-600 mb-4">AI利用の許諾を得るための、丁寧で分かりやすい説明文をAIが作成します。</p>
+                    <div class="w-full">
+                        <label for="usage-type" class="sr-only">利用シーン</label>
+                        <select id="usage-type" class="w-full p-2 border border-slate-300 rounded-md mb-4">
+                            <option value="minor">軽微な利用（アイデア出し等）</option>
+                            <option value="full">本格的な利用（報告書作成補助等）</option>
+                        </select>
+                        <button id="generate-draft-btn" class="w-full bg-gradient-to-r from-[#665191] to-[#a05195] text-white font-bold py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
+                            説明文を生成
+                        </button>
+                    </div>
+                    <div id="draft-loader" class="hidden loader"></div>
+                    <div id="draft-result-container" class="hidden mt-4 text-left">
+                        <div id="draft-result" class="gemini-result whitespace-pre-wrap"></div>
+                        <button id="copy-draft-btn" class="mt-2 bg-slate-200 text-slate-700 text-sm py-1 px-3 rounded-md hover:bg-slate-300 transition-colors">クリップボードにコピー</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="promotion" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-12 text-[#003f5c]">攻めの推進：AIを組織力に変える</h2>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div class="kpi-card">
+                    <h3 class="text-2xl font-bold mb-4 text-[#ff7c43]">ナレッジ共有の効果</h3>
+                    <p class="text-slate-600 mb-6">個々の発見をチームの力に変えることで、組織全体の生産性と創造性が向上します。以下の効果が期待できます。</p>
+                    <div class="chart-container">
+                        <canvas id="benefitChart"></canvas>
+                    </div>
+                </div>
+                <div class="kpi-card flex-grow">
+                     <h3 class="text-2xl font-bold mb-4 text-[#003f5c]">✨ AI活用アイデアジェネレーター</h3>
+                    <p class="text-slate-600 mb-4">チームの業務内容を入力すると、AIが具体的な活用アイデアを3つ提案します。</p>
+                    <div class="w-full">
+                         <label for="task-input" class="sr-only">業務内容</label>
+                         <input type="text" id="task-input" class="w-full p-2 border border-slate-300 rounded-md mb-4" placeholder="例：月次報告書の作成">
+                         <button id="generate-idea-btn" class="w-full bg-gradient-to-r from-[#ff7c43] to-[#ffa600] text-white font-bold py-2 px-4 rounded-md hover:opacity-90 transition-opacity">
+                            アイデアを生成
+                        </button>
+                    </div>
+                    <div id="idea-loader" class="hidden loader"></div>
+                    <div id="idea-result" class="gemini-result whitespace-pre-wrap"></div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center mt-16 pt-8 border-t border-slate-300">
+            <p class="text-xl font-bold text-[#003f5c]">リーダーが未来を創る</p>
+            <p class="text-slate-600">正しい知識と心構えで、AIを我々の強力なパートナーにしていきましょう。</p>
+        </footer>
+
+    </div>
+
+    <script>
+        function wrapText(text, maxLength) {
+            if (typeof text !== 'string' || text.length <= maxLength) {
+                return text;
+            }
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines.filter(line => line.length > 0);
+        }
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+        
+        const brilliantBluesPalette = {
+            darkBlue: '#003f5c',
+            purpleBlue: '#2f4b7c',
+            purple: '#665191',
+            magenta: '#a05195',
+            pink: '#d45087',
+            coral: '#f95d6a',
+            orange: '#ff7c43',
+            yellow: '#ffa600'
+        };
+
+        const benefitChartData = {
+            labels: ['定型業務の削減時間', '新規アイデア創出数', '部門横断の連携'],
+            datasets: [{
+                label: 'ナレッジ共有による効果（月次予測）',
+                data: [30, 15, 25],
+                 backgroundColor: [
+                    brilliantBluesPalette.purple,
+                    brilliantBluesPalette.orange,
+                    brilliantBluesPalette.purpleBlue
+                ],
+                borderColor: [
+                    brilliantBluesPalette.purple,
+                    brilliantBluesPalette.orange,
+                    brilliantBluesPalette.purpleBlue
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        new Chart(document.getElementById('benefitChart'), {
+            type: 'bar',
+            data: benefitChartData,
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                         grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                           title: tooltipTitleCallback
+                        }
+                    }
+                }
+            }
+        });
+
+        const ideaInput = document.getElementById('task-input');
+        const generateIdeaBtn = document.getElementById('generate-idea-btn');
+        const ideaLoader = document.getElementById('idea-loader');
+        const ideaResultDiv = document.getElementById('idea-result');
+
+        const usageTypeSelect = document.getElementById('usage-type');
+        const generateDraftBtn = document.getElementById('generate-draft-btn');
+        const draftLoader = document.getElementById('draft-loader');
+        const draftResultContainer = document.getElementById('draft-result-container');
+        const draftResultDiv = document.getElementById('draft-result');
+        const copyDraftBtn = document.getElementById('copy-draft-btn');
+        
+        const errorModal = document.getElementById('error-modal');
+        const errorMessage = document.getElementById('error-message');
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorModal.classList.remove('hidden');
+            errorModal.classList.add('flex');
+        }
+
+        async function callGeminiAPI(prompt, maxRetries = 3) {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }]
+            };
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API request failed with status ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error('予期せぬレスポンス形式です。');
+                    }
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw error;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+                }
+            }
+        }
+
+        generateIdeaBtn.addEventListener('click', async () => {
+            const task = ideaInput.value.trim();
+            if (!task) {
+                showError('業務内容を入力してください。');
+                return;
+            }
+
+            ideaLoader.classList.remove('hidden');
+            ideaResultDiv.textContent = '';
+            generateIdeaBtn.disabled = true;
+
+            const prompt = `あなたは日本のビジネスコンサルタントです。以下の業務について、生成AIを安全に活用するための具体的なアイデアを3つ提案してください。各アイデアには簡単な説明を加えて、箇条書きで出力してください。\n\n業務内容：${task}`;
+
+            try {
+                const result = await callGeminiAPI(prompt);
+                ideaResultDiv.textContent = result;
+            } catch (error) {
+                showError('アイデアの生成中にエラーが発生しました。しばらくしてから再度お試しください。');
+                ideaResultDiv.textContent = 'エラーが発生しました。';
+            } finally {
+                ideaLoader.classList.add('hidden');
+                generateIdeaBtn.disabled = false;
+            }
+        });
+
+        generateDraftBtn.addEventListener('click', async () => {
+            const usageType = usageTypeSelect.value;
+            const usageText = usageType === 'minor' ? '軽微な利用（社内でのアイデア出しや壁打ち等）' : '本格的な利用（報告書の下書き作成補助等）';
+
+            draftLoader.classList.remove('hidden');
+            draftResultContainer.classList.add('hidden');
+            draftResultDiv.textContent = '';
+            generateDraftBtn.disabled = true;
+
+            const prompt = `あなたは日本の大手企業で働く、丁寧なコミュニケーションを重視するプロジェクトリーダーです。社内規定に基づき、生成AIを安全に限定的に利用する方針です。クライアントへの提案書やメールに記載するための、以下の利用シーンに沿った説明文を、プロフェッショナルかつ安心感を与えるトーンで作成してください。\n\n利用シーン：${usageText}`;
+            
+            try {
+                const result = await callGeminiAPI(prompt);
+                draftResultDiv.textContent = result;
+                draftResultContainer.classList.remove('hidden');
+            } catch (error) {
+                showError('説明文の生成中にエラーが発生しました。しばらくしてから再度お試しください。');
+            } finally {
+                draftLoader.classList.add('hidden');
+                generateDraftBtn.disabled = false;
+            }
+        });
+
+        copyDraftBtn.addEventListener('click', () => {
+            const textToCopy = draftResultDiv.textContent;
+            
+            const textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                copyDraftBtn.textContent = 'コピーしました！';
+                setTimeout(() => {
+                    copyDraftBtn.textContent = 'クリップボードにコピー';
+                }, 2000);
+            } catch (err) {
+                showError('コピーに失敗しました。');
+            }
+            document.body.removeChild(textArea);
+        });
+
+    </script>
+</body>
+</html>
